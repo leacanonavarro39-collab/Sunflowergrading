@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunflower Grading System - Lea M. Caño</title>
+    <style>
+        :root {
+            --sunflower-yellow: #ffcc00;
+            --accent-cyan: #00ffe5;
+            --glass-bg: rgba(0, 0, 0, 0.88);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--sunflower-yellow);
+        }
+
+        .logo-container { display: flex; justify-content: center; align-items: center; gap: 20px; }
+        .logo-container img { height: 60px; filter: drop-shadow(0 0 5px var(--sunflower-yellow)); }
+
+        .main-layout { display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 30px; }
+
+        .card {
+            background: var(--glass-bg);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid var(--sunflower-yellow);
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card h3 { text-align: center; color: var(--sunflower-yellow); margin-top: 0; text-transform: uppercase; }
+
+        input, select { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none; font-weight: bold; }
+
+        .subject-row { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 5px; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn { border: none; padding: 12px; border-radius: 25px; font-weight: bold; cursor: pointer; text-transform: uppercase; flex: 1; transition: 0.3s; }
+        .btn-save { background: var(--sunflower-yellow); color: black; }
+        .btn-list { background: var(--accent-cyan); color: black; }
+        .btn:hover { transform: scale(1.05); }
+
+        .records-section {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            width: 95%;
+            max-width: 1300px;
+            padding: 20px;
+            border-radius: 15px;
+            overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 1000px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: #2c3e50; color: white; font-size: 12px; }
+        
+        .sub-tag { font-size: 9px; color: #777; display: block; font-weight: bold; }
+        .grade-tag { font-size: 14px; font-weight: bold; }
+        .avg-highlight { background: #fff9c4; font-weight: 900; color: #e67e22; }
+
+        .action-btns button { padding: 5px 8px; border: none; border-radius: 4px; cursor: pointer; color: white; font-size: 11px; margin: 2px; }
+        .edit-bg { background: #f39c12; }
+        .print-bg { background: #3498db; }
+        .del-bg { background: #e74c3c; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: white; color: #333; padding: 25px; border-radius: 15px; width: 80%; max-width: 500px; text-align: center; }
+
+        footer { text-align: center; padding: 20px; color: var(--sunflower-yellow); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container">
+        <img src="https://i.ibb.co/3734.png" alt="Passi City">
+        <img src="https://i.ibb.co/3733.png" alt="PCC Seal">
+        <img src="https://i.ibb.co/3736.png" alt="SICT Logo">
+    </div>
+    <div class="header-text">
+        <h1 style="margin:5px 0; font-size: 22px;">PASSI CITY COLLEGE</h1>
+        <h2 style="margin:0; font-size: 16px; color: var(--sunflower-yellow);">SCHOOL OF INFORMATION AND COMMUNICATION TECHNOLOGY (SOICT)</h2>
+        <p style="margin:5px 0; font-size: 14px; color: var(--accent-cyan);">LEA M. CAÑO BSIT-3A</p>
+    </div>
+</header>
+
+<div class="main-layout">
+    <div class="card">
+        <h3 id="formTitle">Sunflower Grading Calculator</h3>
+        <input type="hidden" id="editId">
+        <input type="text" id="name" placeholder="Student Full Name">
+        
+        <select id="course">
+            <option value="" disabled selected>Select Course</option>
+            <option value="BSIT">BS Information Technology</option>
+            <option value="BSCS">BS Computer Science</option>
+            <option value="BSBA">BS Business Administration</option>
+            <option value="BSCrim">BS Criminology</option>
+            <option value="BSED">B Secondary Education</option>
+            <option value="BSHM">BS Hospitality Management</option>
+        </select>
+
+        <select id="section">
+            <option value="" disabled selected>Select Section</option>
+            <option value="Section A"> Section A</option>
+            <option value="Section B"> Section B</option>
+            <option value="Section C"> SectionC</option>
+            <option value="Section D"> SectionD</option>
+            <option value="Irregular">Irregular</option>
+        </select>
+        
+        <div class="subject-row"><input type="text" placeholder="Subject Name 1" id="s1n"><input type="number" placeholder="Grade" id="s1g"></div>
+        <div class="subject-row"><input type="text" placeholder="Subject Name 2" id="s2n"><input type="number" placeholder="Grade" id="s2g"></div>
+        <div class="subject-row"><input type="text" placeholder="Subject Name 3" id="s3n"><input type="number" placeholder="Grade" id="s3g"></div>
+        <div class="subject-row"><input type="text" placeholder="Subject Name 4" id="s4n"><input type="number" placeholder="Grade" id="s4g"></div>
+        <div class="subject-row"><input type="text" placeholder="Subject Name 5" id="s5n"><input type="number" placeholder="Grade" id="s5g"></div>
+
+        <div class="btn-group">
+            <button class="btn btn-save" id="saveBtn" onclick="saveRecord()">Save Record</button>
+            <button class="btn btn-save" id="updateBtn" style="display:none; background:#27ae60; color:white;" onclick="updateRecord()">Update</button>
+            <button class="btn btn-list" onclick="showStudentList()">Students List</button>
+        </div>
+    </div>
+
+    <div class="records-section">
+        <h2 style="margin-top:0;">Student Academic Database</h2>
+        <input type="text" id="search" placeholder="Search name..." onkeyup="renderTable()" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+        <table id="recordTable">
+            <thead>
+                <tr>
+                    <th>Student Details</th>
+                    <th>Subject 1</th>
+                    <th>Subject 2</th>
+                    <th>Subject 3</th>
+                    <th>Subject 4</th>
+                    <th>Subject 5</th>
+                    <th>Average</th>
+                    <th>Remarks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="listModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color:#2c3e50">Registered Students</h2>
+        <div id="simpleList" style="max-height: 300px; overflow-y: auto; text-align: left; padding:10px;"></div>
+        <button onclick="closeModal()" style="padding:10px 30px; border:none; background:#555; color:white; border-radius:5px; cursor:pointer; margin-top:15px;">Close</button>
+    </div>
+</div>
+
+<footer>DEVELOPED BY: LEA M. CAÑO | SOICT 2026</footer>
+
+<script>
+    let db = JSON.parse(localStorage.getItem("lea_sunflower_v4")) || [];
+
+    function saveRecord() {
+        const name = document.getElementById('name').value;
+        const course = document.getElementById('course').value;
+        const section = document.getElementById('section').value;
+        if(!name || !course || !section) return alert("Paki-fill up lahat ng fields!");
+
+        let subjects = []; let total = 0;
+        for(let i=1; i<=5; i++){
+            let sn = document.getElementById(`s${i}n`).value || `Sub ${i}`;
+            let sg = parseFloat(document.getElementById(`s${i}g`).value) || 0;
+            subjects.push({sn, sg}); total += sg;
+        }
+        const avg = (total / 5).toFixed(2);
+        db.push({ id: Date.now(), name, course, section, subjects, avg, remark: avg >= 75 ? "PASSED" : "FAILED" });
+        localStorage.setItem("lea_sunflower_v4", JSON.stringify(db));
+        location.reload();
+    }
+
+    function renderTable() {
+        const q = document.getElementById('search').value.toLowerCase();
+        const body = document.getElementById('tableBody');
+        const filtered = db.filter(item => item.name.toLowerCase().includes(q));
+        
+        body.innerHTML = filtered.map((item, idx) => `
+            <tr>
+                <td align="left">
+                    <b>${item.name}</b><br>
+                    <small>${item.course} - ${item.section}</small>
+                </td>
+                ${item.subjects.map(s => `<td><span class="sub-tag">${s.sn}</span><span class="grade-tag">${s.sg}</span></td>`).join('')}
+                <td class="avg-highlight">${item.avg}</td>
+                <td style="color:${item.remark==='PASSED'?'#27ae60':'#e74c3c'}; font-weight:bold">${item.remark}</td>
+                <td class="action-btns">
+                    <button class="edit-bg" onclick="editRecord(${item.id})">Edit</button>
+                    <button class="print-bg" onclick="printReport(${idx})">Print</button>
+                    <button class="del-bg" onclick="deleteRecord(${item.id})">Del</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function deleteRecord(id) {
+        if(confirm("Burahin ang record na ito?")) {
+            db = db.filter(i => i.id !== id);
+            localStorage.setItem("lea_sunflower_v4", JSON.stringify(db));
+            renderTable();
+        }
+    }
+
+    function editRecord(id) {
+        const item = db.find(i => i.id === id);
+        document.getElementById('editId').value = item.id;
+        document.getElementById('name').value = item.name;
+        document.getElementById('course').value = item.course;
+        document.getElementById('section').value = item.section;
+        item.subjects.forEach((s, i) => {
+            document.getElementById(`s${i+1}n`).value = s.sn;
+            document.getElementById(`s${i+1}g`).value = s.sg;
+        });
+        document.getElementById('saveBtn').style.display = 'none';
+        document.getElementById('updateBtn').style.display = 'block';
+        document.getElementById('formTitle').innerText = "Edit Mode";
+        window.scrollTo(0,0);
+    }
+
+    function updateRecord() {
+        const id = parseInt(document.getElementById('editId').value);
+        const idx = db.findIndex(i => i.id === id);
+        let subjects = []; let total = 0;
+        for(let i=1; i<=5; i++){
+            let sn = document.getElementById(`s${i}n`).value;
+            let sg = parseFloat(document.getElementById(`s${i}g`).value);
+            subjects.push({sn, sg}); total += sg;
+        }
+        const avg = (total / 5).toFixed(2);
+        db[idx] = { ...db[idx], 
+            name: document.getElementById('name').value, 
+            course: document.getElementById('course').value, 
+            section: document.getElementById('section').value,
+            subjects, avg, remark: avg >= 75 ? "PASSED" : "FAILED" };
+        localStorage.setItem("lea_sunflower_v4", JSON.stringify(db));
+        location.reload();
+    }
+
+    function showStudentList() {
+        const listDiv = document.getElementById('simpleList');
+        listDiv.innerHTML = db.length === 0 ? "No students yet." : db.map(i => `<div style="border-bottom:1px solid #eee; padding:5px;">🌻 <b>${i.name}</b> (${i.course} - ${i.section})</div>`).join('');
+        document.getElementById('listModal').style.display = 'flex';
+    }
+
+    function closeModal() { document.getElementById('listModal').style.display = 'none'; }
+
+    function printReport(idx) {
+        const s = db[idx];
+        const p = window.open('', '', 'width=700,height=800');
+        let rows = s.subjects.map(x => `<tr><td>${x.sn}</td><td>${x.sg}</td></tr>`).join('');
+        p.document.write(`<html><body style="text-align:center; font-family:sans-serif; padding:40px;">
+            <h2>PASSI CITY COLLEGE - SOICT</h2><hr>
+            <p align="left"><b>Name:</b> ${s.name}<br><b>Course:</b> ${s.course}<br><b>Section:</b> ${s.section}</p>
+            <table border="1" style="width:100%; border-collapse:collapse;">
+                <tr style="background:#eee;"><th>Subject Name</th><th>Grade</th></tr>${rows}
+                <tr style="background:#fff9c4;"><td><b>TOTAL AVERAGE</b></td><td><b>${s.avg}</b></td></tr>
+            </table>
+            <p align="left"><b>Remarks:</b> ${s.remark}</p>
+            <br><p align="right">____________________<br>Lea M. Caño</p>
+        </body></html>`);
+        p.document.close(); p.print();
+    }
+
+    renderTable();
+</script>
+</body>
+</html>
